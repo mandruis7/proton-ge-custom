@@ -2,42 +2,19 @@
 
 ### (1) PREP SECTION ###
 
-    cd gst-plugins-base
-    git reset --hard HEAD
-    git clean -xdf
-    echo "add Guy's patch for gstreamer preroll buffer for media converter"
-    patch -Np1 < ../patches/gstreamer/mediaconvert-gstdecodebin2.patch
-    cd ..
-
-#    cd gst-plugins-ugly
-#    git reset --hard HEAD
-#    git clean -xdf
-#    echo "add Guy's patch to fix wmv playback in gst-plugins-ugly"
-#    patch -Np1 < ../patches/gstreamer/asfdemux-Re-initialize_demux-adapter_in_gst_asf_demux_reset.patch
-#    patch -Np1 < ../patches/gstreamer/asfdemux-gst_asf_demux_reset_GST_FORMAT_TIME_fix.patch
-#    cd ..
-
-    cd FAudio
-    git reset --hard HEAD
-    git clean -xdf
-
-    # this was removed because WMA decoding is being implemented in wine, but it's not added yet so it's currently still needed
-    git revert --no-commit bcb8c650f2e2c0212b6c4449616d55afae7a45dd
-    cd ..
-
     cd dxvk
     git reset --hard HEAD
     git clean -xdf
 
-    echo "add valve dxvk patches"
+    echo "DXVK: add valve dxvk patches"
     patch -Np1 < ../patches/dxvk/proton-dxvk_avoid_spamming_log_with_requests_for_IWineD3D11Texture2D.patch
     patch -Np1 < ../patches/dxvk/proton-dxvk_add_new_dxvk_config_library.patch
 
     # this needs to be the last patch in the list.. because reasons?
-    echo "add dxvk async patch"
+    echo "DXVK:add dxvk async patch"
     patch -Np1 < ../patches/dxvk/dxvk-async.patch
 
-    echo "add pending Resident Evil games patch"
+    echo "DXVK:add pending Resident Evil games patch"
     patch -Np1 < ../patches/dxvk/2466.patch
     cd ..
 
@@ -46,10 +23,8 @@
     git reset --hard HEAD
     git clean -xdf
 
-    # faudio revert fix in staging:
-#    patch -Np1 < ../patches/wine-hotfixes/staging/x3daudio_staging_revert.patch
-
     # allow esync patches to apply without depending on ntdll-Junction_Points
+    echo "WINE-STAGING: allow esync patches to apply without depending on ntdll-Junction_Points"
     patch -Np1 < ../patches/wine-hotfixes/staging/staging-esync_remove_ntdll_Junction_Points_dependency.patch
 
     cd ..
@@ -64,13 +39,39 @@
 
 ### (2-1) PROBLEMATIC COMMIT REVERT SECTION ###
 
+    echo "WINE: -REVERTS- revert --data-only commits"
+    # these were changed to build in data-only mode, however this causes these dlls not to load in proton
+    # revert the data-only mode changes for now.
+    # wmi.dll
+    git revert --no-commit 141be028802f1675366802d49af01982525c2e6d
+    # usp10.dll
+    git revert --no-commit d5fc074b9f2cf2e52711d832ca76eaaa5277bb8c
+    # tzres.dll
+    git revert --no-commit 457c5df7d33144e45e0b275cf3cd060ec8403f32
+    # stdole2.tlb
+    git revert --no-commit 5b7534e55adb59cddb7f0c8a337cc3c3954c8d8b
+    # shdoclc.dll
+    git revert --no-commit aa957a2db15942260864c50865f828adeccc12e8
+    # sfc.dll
+    git revert --no-commit 2abcdf08033334075a22e65b97a7f8874361e72a
+    # security.dll
+    git revert --no-commit 40611a65e73eee2ff8ff8ff647572f93a7ffd4ba
+    # normaliz.dll
     git revert --no-commit 9b6253199ffb361557c53b1315263518cebc9871
-
-
-#    echo "revert faudio updates -- WINE faudio does not have WMA decoding (notably needed for Skyrim voices) so we still need to provide our own with gstreamer support"
-#    git revert --no-commit a80c5491600c00a54dfc8251a75706ce86d2a08f
-#    git revert --no-commit 22c26a2dde318b5b370fc269cab871e5a8bc4231
-#    patch -RNp1 < ../patches/wine-hotfixes/pending/revert-d8be858-faudio.patch
+    # msimsg.dll
+    git revert --no-commit d3e2fa064f2efe0a9375df23ec141171b74efe40
+    # mshtml.tib
+    git revert --no-commit 1bb2d490f79743e9dac87d279e15f29bd359e715
+    # mferror.dll
+    git revert --no-commit 3584dd2900fbd3a11175d1b3f77a55315442c284
+    # lz32.dll
+    git revert --no-commit 2da8b64cfd5ed46f98d1fbfa5d56b680358a7a6b
+    # light.msstyles
+    git revert --no-commit 91db4290caa0bc4f0173e72296852de2d7ad699d
+    # icmp.dll
+    git revert --no-commit ace84eb6bccc490a563af19118da9e19ede970bb
+    # activeds.tlb
+    git revert --no-commit 91544ee3bb6c7cd2c056ae0d0eb626ade701d09f
 
 ### END PROBLEMATIC COMMIT REVERT SECTION ###
 
@@ -99,12 +100,12 @@
     # Sancreed — 11/21/2021
     # Heads up, it appears that a bunch of Ubisoft Connect games (3/3 I had installed and could test) will crash
     # almost immediately on newer Wine Staging/TKG inside pe_load_debug_info function unless the dbghelp-Debug_Symbols staging # patchset is disabled.
-    # -W dbghelp-Debug_Symbols
+    # -W dbghelp-Debug_Symbols \
 
-    # Disable when using external FAudio
-    # -W xactengine3_7-callbacks \
+    # We manually apply this because reverting it in staging is being a pain in the ass despite it being just 4 lines.
+    # -W stdole32.tlb-SLTG_Typelib \
 
-    echo "applying staging patches"
+    echo "WINE: -STAGING- applying staging patches"
     ../wine-staging/patches/patchinstall.sh DESTDIR="." --all \
     -W winex11-_NET_ACTIVE_WINDOW \
     -W winex11-WM_WINDOWPOSCHANGING \
@@ -116,95 +117,99 @@
     -W server-File_Permissions \
     -W server-Stored_ACLs \
     -W dbghelp-Debug_Symbols \
-    -W xactengine3_7-callbacks \
+    -W stdole32.tlb-SLTG_Typelib \
     -W dwrite-FontFallback
 
-    #echo "Revert d4259ac on proton builds as it breaks steam helper compilation"
-    #patch -RNp1 < ../patches/wine-hotfixes/steamclient/d4259ac8e93_revert.patch
-
-    echo "applying staging Compiler_Warnings revert for steamclient compatibility"
+    echo "WINE: -STAGING- applying staging Compiler_Warnings revert for steamclient compatibility"
     # revert this, it breaks lsteamclient compilation
     patch -RNp1 < ../wine-staging/patches/Compiler_Warnings/0031-include-Check-element-type-in-CONTAINING_RECORD-and-.patch
 
-    echo "Manually apply modified ntdll-Syscall_Emulation patch for proton, rebasing keeps complaining"
+    echo "WINE: -STAGING- Manually apply modified ntdll-Syscall_Emulation patch for proton, rebasing keeps complaining"
     patch -Np1 < ../patches/proton/63-ntdll-Support-x86_64-syscall-emulation.patch
 
-    echo "Manually apply modified ntdll-Serial_Port_Detection patch for proton, rebasing keeps complaining"
+    echo "WINE: -STAGING- Manually apply modified ntdll-Serial_Port_Detection patch for proton, rebasing keeps complaining"
     patch -Np1 < ../patches/proton/64-ntdll-Do-a-device-check-before-returning-a-default-s.patch
 
+    echo "WINE: -STAGING- Manually apply reverted --data-only stdole32.tlb patch"
+    patch -Np1 < ../patches/wine-hotfixes/staging/0020-stdole32.tlb-Compile-typelib-with-oldtlb.patch
 
 ### END WINE STAGING APPLY SECTION ###
 
 ### (2-3) GAME PATCH SECTION ###
 
-    echo "mech warrior online"
+    echo "WINE: -GAME FIXES- mech warrior online fix"
     patch -Np1 < ../patches/game-patches/mwo.patch
 
-    echo "ffxiv"
+    echo "WINE: -GAME FIXES- ffxiv launcher play login button fix"
     patch -Np1 < ../patches/game-patches/ffxiv-launcher-fix.patch
-#    patch -Np1 < ../patches/game-patches/ffxiv-opening-video-fix.patch
 
-    echo "assetto corsa"
+    echo "WINE: -GAME FIXES- assetto corsa hud fix"
     patch -Np1 < ../patches/game-patches/assettocorsa-hud.patch
 
-    echo "mk11 patch"
+    echo "WINE: -GAME FIXES- mk11 crash fix"
     # this is needed so that online multi-player does not crash
     patch -Np1 < ../patches/game-patches/mk11.patch
 
-    echo "killer instinct vulkan fix"
+    echo "WINE: -GAME FIXES- killer instinct vulkan fix"
     patch -Np1 < ../patches/game-patches/killer-instinct-winevulkan_fix.patch
 
-    echo "Castlevania Advance fix"
+    echo "WINE: -GAME FIXES- Castlevania Advance fix"
     patch -Np1 < ../patches/game-patches/castlevania-advance-collection.patch
+
+    echo "WINE: -GAME FIXES- add halo infinite patches"
+    patch -Np1 < ../patches/game-patches/halo-infinite-twinapi.appcore.dll.patch
 
 ### END GAME PATCH SECTION ###
 
 ### (2-4) PROTON PATCH SECTION ###
 
-    echo "clock monotonic"
+    echo "WINE: -PROTON- clock monotonic"
     patch -Np1 < ../patches/proton/01-proton-use_clock_monotonic.patch
 
     #WINE FSYNC
-    echo "applying fsync patches"
+    echo "WINE: -PROTON- applying fsync"
     patch -Np1 < ../patches/proton/03-proton-fsync_staging.patch
 
-    echo "proton futex waitv patches"
+    echo "WINE: -PROTON- futex waitv"
     patch -Np1 < ../patches/proton/57-fsync_futex_waitv.patch
 
-    echo "LAA"
+    echo "WINE: -PROTON- Large Address Aware"
     patch -Np1 < ../patches/proton/04-proton-LAA_staging.patch
 
-    echo "steamclient swap"
+    echo "WINE: -PROTON- steamclient swap"
     patch -Np1 < ../patches/proton/08-proton-steamclient_swap.patch
 
-    echo "protonify"
+    echo "WINE: -PROTON- protonify part 1"
     patch -Np1 < ../patches/proton/10-proton-protonify_staging.patch
 
-    echo "protonify-audio"
+    echo "WINE: -PROTON- protonify part 2"
+    patch -Np1 < ../patches/proton/67-protonify-2.patch
+
+    echo "WINE: -PROTON- protonify-audio"
     patch -Np1 < ../patches/proton/11-proton-pa-staging.patch
 
-    echo "steam bits"
+    echo "WINE: -PROTON- steam bits"
     patch -Np1 < ../patches/proton/12-proton-steam-bits.patch
 
-    echo "proton SDL patches"
+    echo "WINE: -PROTON- SDL additions"
     patch -Np1 < ../patches/proton/14-proton-sdl-joy.patch
 
-    echo "proton gamepad patches"
+    echo "WINE: -PROTON- gamepad additions"
     patch -Np1 < ../patches/proton/15-proton-gamepad-additions.patch
 
-    echo "Valve VR patches"
+    echo "WINE: -PROTON- VR patches"
     patch -Np1 < ../patches/proton/16-proton-vrclient-wined3d.patch
 
-    echo "amd ags"
+    echo "WINE: -PROTON- amd ags"
     patch -Np1 < ../patches/proton/18-proton-amd_ags.patch
 
-    echo "msvcrt overrides"
+    echo "WINE: -PROTON- msvcrt overrides"
     patch -Np1 < ../patches/proton/19-proton-msvcrt_nativebuiltin.patch
 
-    echo "atiadlxx needed for cod games"
+    echo "WINE: -PROTON- atiadlxx"
     patch -Np1 < ../patches/proton/20-proton-atiadlxx.patch
 
-    echo "valve registry entries"
+    echo "WINE: -PROTON- registry entries"
     patch -Np1 < ../patches/proton/21-proton-01_wolfenstein2_registry.patch
     patch -Np1 < ../patches/proton/22-proton-02_rdr2_registry.patch
     patch -Np1 < ../patches/proton/23-proton-03_nier_sekiro_ds3_registry.patch
@@ -223,87 +228,82 @@
     patch -Np1 < ../patches/proton/62-proton-16-Age-of-Empires-IV-registry.patch
 
 
-    echo "valve rdr2 fixes"
+    echo "WINE: -PROTON- rdr2 fixes"
     patch -Np1 < ../patches/proton/25-proton-rdr2-fixes.patch
 
-    echo "valve rdr2 bcrypt fixes"
+    echo "WINE: -PROTON- rdr2 bcrypt fixes"
     patch -Np1 < ../patches/proton/55-proton-bcrypt_rdr2_fixes.patch
 
-    echo "apply staging bcrypt patches on top of rdr2 fixes"
+    echo "WINE: -PROTON- apply staging bcrypt patches on top of rdr2 fixes"
     patch -Np1 < ../patches/wine-hotfixes/staging/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
     patch -Np1 < ../patches/wine-hotfixes/staging/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch
 
-    echo "set prefix win10"
+    echo "WINE: -PROTON- set prefix win10"
     patch -Np1 < ../patches/proton/28-proton-win10_default.patch
 
-    echo "dxvk_config"
+    echo "WINE: -PROTON- dxvk_config"
     patch -Np1 < ../patches/proton/29-proton-dxvk_config.patch
 
-    echo "key input + mouse focus fixes"
+    echo "WINE: -PROTON- key input + mouse focus fixes"
     patch -Np1 < ../patches/proton/38-proton-keyboard-input-and-mouse-focus-fixes.patch
 
-    echo "CPU topology overrides"
+    echo "WINE: -PROTON- CPU topology overrides"
     patch -Np1 < ../patches/proton/39-proton-cpu-topology-overrides.patch
 
-    echo "fullscreen hack"
-#    patch -Np1 < ../patches/proton/41-valve_proton_fullscreen_hack-staging-tkg.patch
+    echo "WINE: -PROTON- fullscreen hack"
     patch -Np1 < ../patches/proton/fshack/01-vulkan-1-prefer-builtin.patch
     patch -Np1 < ../patches/proton/fshack/02-vulkan-childwindow.patch
     patch -Np1 < ../patches/proton/fshack/03-window-manager-fixes.patch
     patch -Np1 < ../patches/proton/fshack/04-fullscreen-hack.patch
     patch -Np1 < ../patches/proton/fshack/05-steam-overlay-fixes.patch
 
-    echo "proton openxr patches"
+    echo "WINE: -PROTON- openxr patches"
     patch -Np1 < ../patches/proton/37-proton-OpenXR-patches.patch
 
-    echo "fullscreen hack fsr patch"
+    echo "WINE: -PROTON- fullscreen hack fsr patch"
     patch -Np1 < ../patches/proton/48-proton-fshack_amd_fsr.patch
 
 #    echo "proton QPC performance patch"
 #    patch -Np1 < ../patches/proton/49-proton_QPC.patch
 #    patch -Np1 < ../patches/proton/49-proton_QPC-update-replace.patch
 
-    echo "proton LFH performance patch"
+    echo "WINE: -PROTON- LFH performance patch"
     patch -Np1 < ../patches/proton/50-proton_LFH.patch
 
-    echo "proton font patches"
+    echo "WINE: -PROTON- font patches"
     patch -Np1 < ../patches/proton/51-proton_fonts.patch
 
-    echo "proton quake champions patches"
+    echo "WINE: -PROTON- quake champions patches"
     patch -Np1 < ../patches/proton/52-proton_quake_champions_syscall.patch
 
-    echo "proton battleye patches"
+    echo "WINE: -PROTON- battleye patches"
     patch -Np1 < ../patches/proton/59-proton-battleye_patches.patch
 
-    echo "proton fake current res patches"
+    echo "WINE: -PROTON- fake current res patches"
     patch -Np1 < ../patches/proton/65-proton-fake_current_res_patches.patch
 
-    echo "proton EasyAntiCheat patch"
-    patch -Np1 < ../patches/proton/66-proton-EAC-bridge.patch
+    echo "WINE: -PROTON- EasyAntiCheat patch"
+   patch -Np1 < ../patches/proton/66-proton-EAC-bridge.patch
 
 ### END PROTON PATCH SECTION ###
 
 ### START MFPLAT PATCH SECTION ###
 
     # Needed specifically for proton, not needed for normal wine
-    echo "proton mfplat dll register patch"
+    echo "WINE: -MFPLAT- mfplat dll register patch"
     patch -Np1 < ../patches/proton/30-proton-mediafoundation_dllreg.patch
+
+    echo "WINE: -MFPLAT- mfplat patches"
     patch -Np1 < ../patches/proton/31-proton-mfplat-patches.patch
 
-    # Needed for Nier Replicant
-#    echo "proton mfplat nier replicant patch"
-#    patch -Np1 < ../patches/wine-hotfixes/staging/mfplat_dxgi_stub.patch
+    # missing http: scheme workaround see: https://github.com/ValveSoftware/Proton/issues/5195
+    echo "WINE: -MFPLAT- The Good Life (1452500) workaround"
+    patch -Np1 < ../patches/wine-hotfixes/mfplat/thegoodlife-mfplat-http-scheme-workaround.patch
 
     # Needed for godfall intro
 #    echo "mfplat godfall fix"
 #    patch -Np1 < ../patches/wine-hotfixes/mfplat/mfplat-godfall-hotfix.patch
 
-    # missing http: scheme workaround see: https://github.com/ValveSoftware/Proton/issues/5195
-#    echo "The Good Life (1452500) workaround"
-#    patch -Np1 < ../patches/game-patches/thegoodlife-mfplat-http-scheme-workaround.patch
-
-#    echo "FFXIV Video playback mfplat includes"
-#    patch -Np1 < ../patches/game-patches/ffxiv-mfplat-additions.patch
 
 ### END MFPLAT PATCH SECTION ###
 
@@ -315,18 +315,12 @@
 
     # keep this in place, proton and wine tend to bounce back and forth and proton uses a different URL.
     # We can always update the patch to match the version and sha256sum even if they are the same version
-    echo "hotfix to update mono version"
+    echo "WINE: -HOTFIX- update mono version"
     patch -Np1 < ../patches/wine-hotfixes/pending/hotfix-update_mono_version.patch
 
-    echo "add halo infinite patches"
-    patch -Np1 < ../patches/wine-hotfixes/pending/halo-infinite-twinapi.appcore.dll.patch
-
     # https://github.com/Frogging-Family/wine-tkg-git/commit/ca0daac62037be72ae5dd7bf87c705c989eba2cb
-    echo "unity crash hotfix"
+    echo "WINE: -HOTFIX- unity crash hotfix"
     patch -Np1 < ../patches/wine-hotfixes/pending/unity_crash_hotfix.patch
-
-    echo "protonify part 2"
-    patch -Np1 < ../patches/proton/67-protonify-2.patch
 
 #    disabled, not compatible with fshack, not compatible with fsr, missing dependencies inside proton.
 #    patch -Np1 < ../patches/wine-hotfixes/testing/wine_wayland_driver.patch
