@@ -185,6 +185,9 @@
     echo "WINE: -PROTON- protonify part 2"
     patch -Np1 < ../patches/proton/67-protonify-2.patch
 
+    echo "WINE: -PROTON- tabtip + uiautomationcore patches"
+    patch -Np1 < ../patches/proton/68-proton-tabtip-uiautomationcore.patch
+
     echo "WINE: -PROTON- protonify-audio"
     patch -Np1 < ../patches/proton/11-proton-pa-staging.patch
 
@@ -251,11 +254,18 @@
     patch -Np1 < ../patches/proton/39-proton-cpu-topology-overrides.patch
 
     echo "WINE: -PROTON- fullscreen hack"
+    echo "1"
     patch -Np1 < ../patches/proton/fshack/01-vulkan-1-prefer-builtin.patch
+    echo "2"
     patch -Np1 < ../patches/proton/fshack/02-vulkan-childwindow.patch
+    echo "3"
     patch -Np1 < ../patches/proton/fshack/03-window-manager-fixes.patch
+    echo "4"
     patch -Np1 < ../patches/proton/fshack/04-fullscreen-hack.patch
+    echo "5"
     patch -Np1 < ../patches/proton/fshack/05-steam-overlay-fixes.patch
+    echo "6"
+    patch -Np1 < ../patches/proton/fshack/06-post-fshack-tweaks.patch
 
     echo "WINE: -PROTON- openxr patches"
     patch -Np1 < ../patches/proton/37-proton-OpenXR-patches.patch
