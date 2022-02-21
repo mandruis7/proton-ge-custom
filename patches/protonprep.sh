@@ -78,6 +78,9 @@
 
 ### (2-2) WINE STAGING APPLY SECTION ###
 
+    # We manually apply this because reverting it in staging is being a pain in the ass despite it being just 4 lines.
+    # -W stdole32.tlb-SLTG_Typelib \
+
     # these cause window freezes/hangs with origin
     # -W winex11-_NET_ACTIVE_WINDOW \
     # -W winex11-WM_WINDOWPOSCHANGING \
@@ -101,9 +104,6 @@
     # Heads up, it appears that a bunch of Ubisoft Connect games (3/3 I had installed and could test) will crash
     # almost immediately on newer Wine Staging/TKG inside pe_load_debug_info function unless the dbghelp-Debug_Symbols staging # patchset is disabled.
     # -W dbghelp-Debug_Symbols \
-
-    # We manually apply this because reverting it in staging is being a pain in the ass despite it being just 4 lines.
-    # -W stdole32.tlb-SLTG_Typelib \
 
     echo "WINE: -STAGING- applying staging patches"
     ../wine-staging/patches/patchinstall.sh DESTDIR="." --all \
@@ -132,6 +132,7 @@
 
     echo "WINE: -STAGING- Manually apply reverted --data-only stdole32.tlb patch"
     patch -Np1 < ../patches/wine-hotfixes/staging/0020-stdole32.tlb-Compile-typelib-with-oldtlb.patch
+
 
 ### END WINE STAGING APPLY SECTION ###
 
@@ -307,8 +308,9 @@
     patch -Np1 < ../patches/proton/31-proton-mfplat-patches.patch
 
     # missing http: scheme workaround see: https://github.com/ValveSoftware/Proton/issues/5195
-    echo "WINE: -MFPLAT- The Good Life (1452500) workaround"
-    patch -Np1 < ../patches/wine-hotfixes/mfplat/thegoodlife-mfplat-http-scheme-workaround.patch
+    # patch currently broken as of wine commits on Feb 10th. Needs rebase
+#    echo "WINE: -MFPLAT- The Good Life (1452500) workaround"
+#    patch -Np1 < ../patches/wine-hotfixes/mfplat/thegoodlife-mfplat-http-scheme-workaround.patch
 
     # Needed for godfall intro
 #    echo "mfplat godfall fix"
