@@ -118,6 +118,7 @@
     -W server-Stored_ACLs \
     -W dbghelp-Debug_Symbols \
     -W stdole32.tlb-SLTG_Typelib \
+    -W mfplat-streaming-support \
     -W dwrite-FontFallback
 
     echo "WINE: -STAGING- applying staging Compiler_Warnings revert for steamclient compatibility"
@@ -308,7 +309,6 @@
     patch -Np1 < ../patches/proton/31-proton-mfplat-patches.patch
 
     # missing http: scheme workaround see: https://github.com/ValveSoftware/Proton/issues/5195
-    # patch currently broken as of wine commits on Feb 10th. Needs rebase
 #    echo "WINE: -MFPLAT- The Good Life (1452500) workaround"
 #    patch -Np1 < ../patches/wine-hotfixes/mfplat/thegoodlife-mfplat-http-scheme-workaround.patch
 
