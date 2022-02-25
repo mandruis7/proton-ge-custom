@@ -13,9 +13,6 @@
     # this needs to be the last patch in the list.. because reasons?
     echo "DXVK:add dxvk async patch"
     patch -Np1 < ../patches/dxvk/dxvk-async.patch
-
-    echo "DXVK:add pending Resident Evil games patch"
-    patch -Np1 < ../patches/dxvk/2466.patch
     cd ..
 
     #WINE STAGING
@@ -76,6 +73,11 @@
 
     # mfplat
     # once remi finishes upstreaming everything we will be able to get rid of a lot of these.
+    git revert --no-commit a4be9e85687f7a8d7476ee3d3ced80eeec720f57
+    git revert --no-commit 0c59cfc14e33a5706c1873151780d5b2dcc536ca
+    git revert --no-commit 28c9c138d2658a4c3252a94d45a1e8b7ac28be7f
+    git revert --no-commit 5144b27661fcd6705353d832e0383085f8afe842
+    git revert --no-commit 7da1828c4927faec011d1c15d2f3f9bbb43435b7
     git revert --no-commit 4dd187b2227767524825e51eddd14f206ffd03dd
     git revert --no-commit 0052ffbfa0e7672278b3d5fcdb767d604fa0f565
     git revert --no-commit d84d9054f5466212e122fac70265eae841438764
@@ -168,6 +170,9 @@
 
     echo "WINE: -GAME FIXES- add halo infinite patches"
     patch -Np1 < ../patches/game-patches/halo-infinite-twinapi.appcore.dll.patch
+
+    echo "WINE: -GAME FIXES- add cities XXL patches"
+    patch -Np1 < ../patches/game-patches/v5-0001-windowscodecs-Correctly-handle-8bpp-custom-conver.patch
 
 ### END GAME PATCH SECTION ###
 
