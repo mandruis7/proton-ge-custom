@@ -73,6 +73,11 @@
 
     # mfplat
     # once remi finishes upstreaming everything we will be able to get rid of a lot of these.
+    git revert --no-commit cd90f650df483eddd73c53319b2e1f5bddfb3f25
+    git revert --no-commit 227a1275b14a2ffd71a4d0c621cb655e3576ad02
+    git revert --no-commit 9196fee58349558593fd7edf4768b189c25f6293
+    git revert --no-commit aa867c6cfba48a63179088ec6381c73488853659
+    git revert --no-commit d2f653a854ccd17688813d6b7f585acbfb45b9ba
     git revert --no-commit a4be9e85687f7a8d7476ee3d3ced80eeec720f57
     git revert --no-commit 0c59cfc14e33a5706c1873151780d5b2dcc536ca
     git revert --no-commit 28c9c138d2658a4c3252a94d45a1e8b7ac28be7f
@@ -83,6 +88,14 @@
     git revert --no-commit d84d9054f5466212e122fac70265eae841438764
     git revert --no-commit 34a55c7b96c97b178ea1ab519eb0e847096f2076
     git revert --no-commit 4d929972c341bff2da3616606b8cbeadf85dba26
+
+    # mouse focus
+    git revert --no-commit bde39137cf4d8d392b8ca844b70b32d8ae922124
+    git revert --no-commit cb4c3b8d77d6f89e418cde3f3a4b7f9daea9d381
+    git revert --no-commit d9f21fcca5376f47b842f3d061674898eb0db310
+    git revert --no-commit 088033cfb655123fb0daef2c0347e38c26801a19
+    git revert --no-commit 0c6d042cc3b1b2cbfb702bb3d199cc7a83e6cbd2
+    git revert --no-commit fcc1581938aa84aff86357ba3154775353ff8c9e
 
 ### END PROBLEMATIC COMMIT REVERT SECTION ###
 
