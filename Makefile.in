@@ -192,7 +192,7 @@ GECKO_VER := 2.47.2
 GECKO32_TARBALL := wine-gecko-$(GECKO_VER)-x86.tar.xz
 GECKO64_TARBALL := wine-gecko-$(GECKO_VER)-x86_64.tar.xz
 
-WINEMONO_VER := 7.1.2
+WINEMONO_VER := 7.1.5
 WINEMONO_TARBALL := wine-mono-$(WINEMONO_VER)-x86.tar.xz
 
 FONTS := $(SRCDIR)/fonts
@@ -402,8 +402,6 @@ redist: dist | $(filter-out dist deploy install redist,$(MAKECMDGOALS))
 	cp -Rf $(PROTONFIXES_TARGET)/cabextract $(DST_DIR)/bin/
 	cp -Rf $(PROTONFIXES_TARGET)/libmspack.so.0 $(DST_DIR)/lib64/
 	cp -Rf $(PROTONFIXES_TARGET)/libmspack.so.0.1.0 $(DST_DIR)/lib64/
-	tar -C $(DST_DIR) -c . | gzip -c -1 > $(REDIST_DIR)/proton_dist.tar.gz
-	@echo "Created redistribution tarball at "$(REDIST_DIR)"/proton_dist.tar.gz"
 	mkdir -p $(BUILD_NAME)
 	cp -Rf $(REDIST_DIR)/* $(BUILD_NAME)
 	tar -cvzf $(BUILD_NAME).tar.gz $(BUILD_NAME)
