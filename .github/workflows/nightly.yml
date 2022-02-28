@@ -56,7 +56,7 @@ jobs:
         run: sudo apt-get remove -y '*mingw-w64*'
 
       - name: apply patches
-        run: ./patches/protonprep.sh
+        run: ./patches/protonprep-valve.sh
 
       - name: Create dir structure
         run: mkdir build
