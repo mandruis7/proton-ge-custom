@@ -1,19 +1,31 @@
 # proton-ge-custom
-# Please note, this is a custom build of proton, and is -not- affiliated with Valve's proton. 
-# Please also note I do not provide the flatpak of proton-GE, and I do not provide the AUR version of proton-GE. I will not assist with those.
-# The only version of proton-GE that I provide and will assist with builds of is the one provided within this repository, using the vagrant build system documented here.
-# I cannot validate the accuracy or functionality of other builds that have not been built using the vagrant build system included here.
 
-# If you have an issue that happens with my proton-GE build, provided FROM this repository, that does -not- happen on Valve's proton, please DO NOT open a bug report on Valve's bug tracker.
+## (1) RUNNING NON-STEAM GAMES WITH PROTON OUTSIDE OF STEAM IS NOT SUPPORTED. DO NOT ASK FOR HELP WITH THIS:
 
-# Instead, contact me on Discord about the issue:
+Proton runs in a container, which uses a runtime environment and libraries specifically built for use within that container. Not running it as intended results in the container and therefore its runtime not being used, and severely breaks library compatibility.
+
+It causes wine to search for libraries on your system instead of those it was built with/intended for within proton.
+
+It may work, if enough libraries match, but it is not correct and not supportable due to library differences across distros.
+
+If you want proton functionality -outside- of proton for non-steam games, I provide Wine-GE for usage with Lutris, found here:
+
+https://github.com/gloriouseggroll/wine-ge-custom
+
+## (2) If you have an issue that happens with my proton-GE build, provided FROM this repository, that does -not- happen on Valve's proton, please DO NOT open a bug report on Valve's bug tracker. Instead, contact me on Discord about the issue:
 
 https://discord.gg/6y3BdzC
+
+## (3)  Please note, this is a custom build of proton, and is -not- affiliated with Valve's proton.
+## (4) Please also note I do not provide the flatpak of proton-GE, and I do not provide the AUR version of proton-GE. I will not assist with those.
+## (5) The only version of proton-GE that I provide and will assist with builds of is the one provided within this repository, using the build system documented here.
+## (6) I cannot validate the accuracy or functionality of other builds that have not been built using the build system included here.
 
 ## Table of contents
 
 - [Overview](#overview)
-	- [Patches](#patches)
+	- [Protonfixes](#protonfixes)
+	- [Media Foundation Fixes (fully working or playable)](#media-foundation-fixes-fully-working-or-playable)
 	- [Notes](#notes)
 - [Installation](#installation)
 	- [Native](#native)
@@ -39,75 +51,175 @@ https://discord.gg/6y3BdzC
 
 ## Overview
 
-This is my build of Proton with the most recent releases of vanilla WINE. It has FFmpeg enabled for FAudio by default, and all of Proton's patches ported over to be applied to WINE, as well as Wine-staging and VKD3D.
+This is my build of Proton with the most recent bleeding-edge proton experimental WINE.
 
-### Steam game patches/fixes
+Things it contains that Valve's proton does not:
 
-- FFXIV Launcher
-- FFXV Steam
-- Mech Warrior online
-- Assetto Corsa HUD fix
-- Assetto Corsa Competizione stutter fix
-- Sword Art Online gnutls
-- ORIGIN downloads fix
-- Monster Hunter World
-- Mortal Kombat 11
-- GTA V Keyboard input fix
-- Steep fix
-- AC Odyssey black bars fix
-- Various WINE hotfixes for WINE functionality that fix regressions per version
-- Various Proton hotfixes for Proton functionality that fix regressions per version
-- Screen fixes for Nier: Automata, Sekiro, Dark Souls
-- Path of Exile vulkan renderer fixed
-- Mount and Blade Warband
+- DXVK patched with Async, which can be toggled with DXVK_ASYNC=1
+- Additional media foundation patches for better video playback support
+- AMD FSR patches added directly to fullscreen hack that can be toggled with WINE_FULLSCREEN_FSR=1
+- FSR Fake resolution patch (details here: https://github.com/GloriousEggroll/proton-ge-custom/pull/52)
+- Nvidia CUDA support for phsyx and nvapi
+- Raw input mouse support
+- fix for Mech Warrior Online
+- fix for Asseto Corsa HUD
+- fix for MK11 crash in single player
+- fix for Killer Instinct Vulkan related crash
+- fix for Cities XXL patches
+- 'protonfixes' system -- this is an automated system that applies per-game fixes (such as winetricks, envvars, EAC workarounds, overrides, etc).
+- various upstream WINE patches backported
+- various wine-staging patches applied as they become needed
+
+## Protonfixes
+
+- Age of Empires II: DE
+- Batman Arkham Asylum
+- Catherine Classic
+- Dark Sould Prepare To Die Edition
+- Dark Souls Remastered
+- Destiny 2
+- Dungeons & Dragons Online
+- Age Of Empire 3: Complete Collection
+- Age of Empires: DE
+- Age of Mythology: Extended Edition
+- AirMech Strike
+- Apex Legends
+- Arkania
+- Assetto Corsa
+- Baldur's Gate 3
+- Batman Arkham Knight
+- Battlefield: Bad Company 2
+- BeamNG.drive
+- Bejeweled 3
+- Beyond Good and Evil
+- BioShock 2 Remastered
+- BIT.TRIP BEAT
+- BIT.TRIP RUNNER
+- Blood and Bacon
+- Borderlands 2
+- Borderlands 3
+- Call of Duty (2003)
+- Chantelise - A Tale of Two Sisters
+- Chronophantasma Extend
+- Conan Exiles
+- Crashday Redline Edition
+- Cryostasis
+- Crysis
+- DEAD OR ALIVE 5 Last Round
 - Divinity Original Sin 2
-- Sea of Thieves
-- Death Stranding fixes
-- Horizon Zero Dawn fixes
-- Fall Guys controller mapping fix
-- World War Z Vulkan renderer fix
-- rFactor 2
-- Ashes of the Singularity
-- Metal Gear Solid
-- Metal Gear Solid: Ground Zeroes
-- Indiana Jones and the Emperor's Tomb
-- Various EA Origin launcher fixes
-- Bloons TD6
-- Dark Souls III, Sekiro, Nier Automata graphics fix
-- Baldur's Gate 3 Launcher workaround
-- Serious Sam 4 fixes
-- Just Cause 4 fixes
-- Age of Empires II: DE Online Multiplayer fixed
-- Halo: MCC Online coop campaign fixed
+- Doom 2016
+- DRAGON BALL FighterZ
+- Duck Game
+- Dusty Revenge: Co-Op Edition
+- Endless Legend
+- Evil Genius 2
+- Fallout 3
+- Fallout 4
+- FarCry 5
+- FFXIV
+- FFX/X-2 HD Remaster
+- FINAL FANTASY IX
+- Final Fantasy XIII
+- Flight Simulator 2020
+- Forts
+- Gears 5
+- Gothic 1
+- Gothic 3
+- Gothic 3 Forsaken Gods Enhanced Edition
+- Grim Dawn
+- GT Legends
+- Guilty Gear Accent Core Plus R
+- Heavy Rain
+- IMSCARED
+- JUMP FORCE
+- L.A. Noire
+- LEGO Batman 2: DC Super Heroes
+- LEGO The Lord of the Rings
+- Little Nightmares
+- Lord of the Rings: War in the North
+- Mafia II Definitive Edition
+- Metro 2033
+- Mortal Kombat X
+- Naruto To Boruto
+- Oddworld: Munch's Oddysee
+- Order of Battle: World War II
+- Path of Exile
+- Persona 4 Golden
+- Pes 2021
+- PixARK
+- Plants vs. Zombies: Game of the Year
+- Potatoman Seeks the Troof
+- Progressbar95
+- Putt-Putt: Pep's Birthday Surprise
+- Recettear: An Item Shop's Tale
+- Red Dead Redemption 2
+- Resident Evil
+- Resident Evil 0
+- Resident Evil 5
+- Resident Evil 6
+- Resident Evil Revelations
+- Resident Evil Revelations 2
+- Rise of Nations: Extended Edition
+- Sacred 2 Gold
+- Serious Sam 4
+- Serious Sam: The Random Encounter
+- Skyrim
+- Skyrim SE
+- Sleeping Dogs: Definitive Edition
+- Sonic CD
+- Soulcalibur VI
+- Space Engineers
+- STAR WARS Galactic Battlegrounds Saga
+- Strange Brigade
+- SUGURI 2
+- Super Meat Boy
+- Syberia
+- Tesla Effect
+- The Bureau: XCOM Declassified
+- The Elder Scrolls Online
+- The Evil Within(268050)
+- Tomb Raider 2013
+- Tomb Raider I
+- Watch_Dogs
+- Watch_Dogs 2
+- WORLD OF HORROR
+- Yakuza 0
+- Yakuza Kiwami
+- Yesterday Origins
+- You Need a Budget 4
+- Halo:MCC
+- HighFleet
+- Injustice 2
+- Marvel's Avengers
+- Mass Effect Legendary Edition
+- Mortal Kombat 11
+- Stealth Inc 2: A Game of Clones
+- The Lord of the Rings Online
+- Tree Of Savior
+- Warframe
+- Oceanhorn: Monster of Uncharted Seas
+- Arkania
+- Gothic II: Gold Edition
 
-### Non-Steam or winesteam game patches
 
-- World of Warcraft DX12 compatibility
-- Diablo 1 Menu fix
-
-### Quality of Life patches
-
-- All of Valve's WINE Proton patches
-- Wine-staging patches
-- Vulkan child window patch
-- Protonfixes integration (has various scripts to run winetricks on games that need them)
-- FAudio with FFmpeg enabled (fixes audio/voices in multiple games)
-- Various WINE hotfixes for WINE functionality that fix regressions per version
-- Various Proton hotfixes for Proton functionality that fix regressions per version
-- DXVK is compiled with async for faster shader compiling. See environment variables section for more information on usage.
-- AMD FidelityFX Super Resolution (FSR) has been patched in as the fullscreen hack's upscaling backend.
-
-### Media Foundation fixes (Fully working or playable)
+## Media Foundation fixes (Fully working or playable)
 
 - Spyro Reignited Trilogy
 - Mortal Kombat 11
 - Injustice 2
 - Power Rangers: Battle for the Grid
-- Darksiders: Warmastered Edition
 - Borderlands 3
+- Resident Evil 0
+- Resident Evil
 - Resident Evil 2 Remastered
 - Resident Evil 3 Remastered
+- Resident Evil 5
+- Resident Evil 6
 - Resident Evil 7
+- Resident Evil 8
+- Resident Evil Revalations
+- Resident Evil Revalations 2
+- Persona 4 Golden
 - PC Building Simulator
 - Dangonronpa V3
 - Super Lucky's Tale
@@ -117,25 +229,34 @@ This is my build of Proton with the most recent releases of vanilla WINE. It has
 - Crazy Machines 3
 - Devil May Cry 5
 - Wasteland 3
+- Mutant Year Zero
+- Ultimate Marvel Vs. Capcom 3
+- Industry of Titan
+- Call of Duty Black Ops III
+- Tokyo Xanady Xe+
+- Haven
+- Nier Replicant
+- Scrap Mechanic
+- Aven Colony
+- American Fugitive
+- Asrtonner
+- Soul Caliber VI
+- Monster Hunter Rise
+- Seven: Days Gone
 
-### Notes
+## Notes
 
-- Warframe does **not** need `WINEDLLOVERRIDES="xaudio2_7=n,b"` — FAudio replaces xaudio2. Using this override WILL lead to game crashes
 - Warframe is problematic with VSync. Turn it off or on in game, do not set to `Auto`
 - Warframe needs a set a frame limit in game. Unlimited framerate can cause slowdowns
 - Warframe on Nvidia: you may need to disable GPU Particles in game otherwise the game can freeze randomly. On AMD they work fine
-- Injustice 2 and MK11 are missing cutscene audio
 
-Full patches can be viewed in [protonprep.sh](patches/protonprep.sh).
+Full patches can be viewed in [protonprep-valve.sh](patches/protonprep-valve.sh).
 
 ## Installation
 
 PLEASE NOTE: There are prerequisites for using this version of proton:
 
-1. You must have wine installed on your system
-2. You must have winetricks installed on your system
-3. You must have wine dependencies installed on your system. See https://www.gloriouseggroll.tv/how-to-get-out-of-wine-dependency-hell/
-4. You must have vulkan gpu drivers/packages installed properly on your system. See https://github.com/lutris/docs/blob/master/InstallingDrivers.md
+1. You must have vulkan gpu drivers/packages installed properly on your system. See https://github.com/lutris/docs/blob/master/InstallingDrivers.md
 
 ### Manual
 
@@ -177,20 +298,18 @@ This unofficial build isn't supported by GloriousEggroll nor Valve and wasn't te
 
 ## Building
 
-1. Install VirtualBox and its kernel modules. Make sure they are enabled at boot.
-2. Install Vagrant.
-3. Clone this repo by executing:
+1. Clone this repo by executing:
 
 ```sh
 	git clone --recurse-submodules http://github.com/gloriouseggroll/proton-ge-custom
 ```
 
-4. Drop any custom patches into patches/, then open patches/protonprep.sh and add a patch line for them under `#WINE CUSTOM PATCHES` in the same way the others are done. 
+4. Drop any custom patches into patches/, then open patches/protonprep-valve.sh and add a patch line for them under `#WINE CUSTOM PATCHES` in the same way the others are done.
 
 5. Apply all of the patches in patches/ by running:
 
 ```sh
-	./patches/protonprep.sh &> patchlog.txt
+	./patches/protonprep-valve.sh &> patchlog.txt
 ```
 
 in the main proton-ge-custom directory. Open `patchlog.txt` and search for "fail" to make sure no patch failures occured. An easy way to do this is like so:
@@ -200,30 +319,17 @@ in the main proton-ge-custom directory. Open `patchlog.txt` and search for "fail
 	grep -i error patchlog.txt 
 ```
 
-6. Open proton-ge-custom a terminal and type the following:
+6. Navigate to the parent directory containing the proton-ge-custom folder.
+
+7. Type the following (note: if using docker instead of podman, change to --container-engine=podman):
 
 ```sh
-	# On the first run choose yes, it will ask you to run vagrant up again
-	vagrant up
-	# This will take a while on the first run, as it prepares everything
-	vagrant up
-
-	# This will start the build and log everything to buildlog.txt
-	# so that you can review the log if something fails)
-	build_name=some_custom_build_name make redist | tee buildlog.txt 
-
-	# This will shut down the build afterwards
-	vagrant halt
+	mkdir build && cd build
+	../proton-ge-custom/configure.sh --enable-ccache --build-name=SOME-BUILD-NAME-HERE --container-engine=podman
+	make redist &> log
 ```
 
-For future builds you only need to run:  
-
-```sh
-	build_name=some_custom_build_name make redist | tee buildlog.txt  
-	vagrant halt
-```
-
-Builds will be placed in `proton-ge-custom/vagrant_share/` as both the full folder and a `.tar.gz` of the folder.
+Build will be placed within the build directory as SOME-BUILD-NAME-HERE.tar.gz.
 
 ## Enabling
 
@@ -232,8 +338,6 @@ Builds will be placed in `proton-ge-custom/vagrant_share/` as both the full fold
 3. Launch the game.
 
 ## Modification
-
-Vagrant syncs the Proton directory to any files in the cloned repo. So, if you want to make changes, close the VM with `vagrant halt`, make your changes, then launch Vagrant again with `vagrant up`
 
 Environment variable options:
 
@@ -271,25 +375,6 @@ As many of you may or may not already know, there is a Credits section in the RE
 - https://github.com/Frogging-Family/wine-tkg-git
 
 I and many others owe TKG. In regards to both WINE and Proton. He has dedicated a lot of time (2+ years at least) to rebasing WINE and Proton patches, as well as making his own contributions. Before he came along, I did some rebasing work, and mainly only released things for Arch. These days he almost always beats me to rebasing, and it saves myself and others a **lot** of work.
-
-Regularly his rebases can be found in my [patches](patches/proton) list:
-
-- [`proton-fsync_staging.patch`](patches/proton/proton-fsync_staging.patch)
-- [`proton-fsync-spincounts.patch`](patches/proton/proton-fsync-spincounts.patch)
-- [`proton-FS_bypass_compositor.patch`](patches/proton/proton-FS_bypass_compositor.patch)
-- [`valve_proton_fullscreen_hack-staging.patch`](patches/proton/valve_proton_fullscreen_hack-staging.patch)
-- [`proton-rawinput.patch`](patches/proton/proton-rawinput.patch)
-- [`proton-steamclient_swap.patch`](patches/proton/proton-steamclient_swap.patch)
-- [`proton-protonify_staging_rpc.patch`](patches/proton/proton-protonify_staging_rpc.patch)
-- [`proton-protonify_staging.patch`](patches/proton/proton-protonify_staging.patch)
-- [`proton-steam-bits.patch`](patches/proton/proton-steam-bits.patch)
-- [`proton-sdl_joy.patch`](patches/proton/proton-sdl_joy.patch)
-- [`proton-sdl_joy_2.patch`](patches/proton/proton-sdl_joy_2.patch)
-- [`proton-gamepad-additions.patch`](patches/proton/proton-gamepad-additions.patch)
-- [`proton-vk-bits-4.5.patch`](patches/proton/proton-vk-bits-4.5.patch)
-- [`proton-winevulkan.patch`](patches/proton/proton-winevulkan.patch)
-
-Within these patches are Proton rebases. Many of them I've done on my own before he did them, however as he regularly rebases, many of my older patches have been replaced with his rebase patches. He deserves a huge amount of recognition for this.
 
 ### Guy1524 (Derek Lesho)
 

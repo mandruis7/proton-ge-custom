@@ -67,6 +67,9 @@ else
 	override DOCKER_OPTS := $(CCACHE_ENV) -e CCACHE_DISABLE=1 $(DOCKER_OPTS)
 endif
 
+export CARGO_HOME := $(if $(CARGO_HOME),$(CARGO_HOME),$(HOME)/.cargo)
+override DOCKER_OPTS := -v $(CARGO_HOME):$(CARGO_HOME)$(CONTAINER_MOUNT_OPTS) -e CARGO_HOME=$(CARGO_HOME) $(DOCKER_OPTS)
+
 ifneq ($(ROOTLESS_CONTAINER),1)
 	override DOCKER_OPTS := -e HOME -e USER -e USERID=$(shell id -u) -u $(shell id -u):$(shell id -g) $(DOCKER_OPTS)
 endif
@@ -113,6 +116,7 @@ J := $(shell nproc)
 ifeq ($(ENABLE_CCACHE),1)
 container-build: $(shell mkdir -p $(CCACHE_DIR))
 endif
+container-build: $(shell mkdir -p $(CARGO_HOME))
 container-build: private SHELL := $(CONTAINER_SHELL)
 container-build:
 	+$(MAKE) -j$(J) $(filter -j%,$(MAKEFLAGS)) -f $(firstword $(MAKEFILE_LIST)) $(MFLAGS) $(MAKEOVERRIDES) CONTAINER=1 $(CONTAINERGOALS)
@@ -574,25 +578,36 @@ $(eval $(call rules-meson,gst_good,32))
 $(eval $(call rules-meson,gst_good,64))
 
 ##
+## FFmpeg
+##
+
+FFMPEG_CONFIGURE_ARGS := \
+	--enable-shared \
+	--disable-static \
+	--disable-everything \
+	--disable-programs \
+	--disable-doc \
+	--enable-decoder=mpeg4 \
+	--enable-decoder=wmapro \
+	--enable-decoder=wmav3 \
+	--enable-decoder=wmav2 \
+	--enable-decoder=wmav1 \
+	--enable-decoder=wmv3 \
+	--enable-decoder=wmv2 \
+	--enable-decoder=wmv1 \
+	--enable-decoder=h264 \
+	--enable-decoder=aac
+
+$(eval $(call rules-source,ffmpeg,$(SRCDIR)/FFmpeg))
+$(eval $(call rules-configure,ffmpeg,32))
+$(eval $(call rules-configure,ffmpeg,64))
+
+
+##
 ## gst-libav
 ##
 
-GST_LIBAV_MESON_ARGS := \
-        -Ddoc=disabled \
-    $(GST_COMMON_MESON_ARGS)
-
-GST_LIBAV_DEPENDS = gst_orc gstreamer gst_base
-
-# copying ffmpeg is temporary here, this assumes the build directory is in the same directory as proton-ge-custom
-# Ex.
-# somefolder/proton-ge-custom
-# somefolder/build
-$(OBJ)/.gst_libav-post-source:
-	mkdir -p $(GST_LIBAV_SRC)/subprojects
-	cp -R $(SRCDIR)/FFmpeg $(GST_LIBAV_SRC)/subprojects/
-	sed -i 's/0.54/0.47/g' $(GST_LIBAV_SRC)/subprojects/FFmpeg/meson.build
-	sed -i "s/libwebp', type: 'feature', value: 'auto'/libwebp', type: 'feature', value: 'disabled'/g" $(GST_LIBAV_SRC)/subprojects/FFmpeg/meson_options.txt
-	sed -i "s/libwebp_anim_encoder', type: 'feature', value: 'auto'/libwebp_anim_encoder', type: 'feature', value: 'disabled'/g" $(GST_LIBAV_SRC)/subprojects/FFmpeg/meson_options.txt
+GST_LIBAV_DEPENDS = gst_orc gstreamer gst_base ffmpeg
 
 $(eval $(call rules-source,gst_libav,$(SRCDIR)/gst-libav))
 $(eval $(call rules-meson,gst_libav,32))
@@ -975,9 +990,6 @@ $(OBJ)/.vkd3d-proton-post-build64:
 ##
 ## mediaconv
 ##
-
-MEDIACONV_SOURCE_ARGS = \
-    --exclude Cargo.lock \
 
 MEDIACONV_DEPENDS = gst_orc gstreamer gst_base
 
