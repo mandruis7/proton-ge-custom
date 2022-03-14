@@ -20,7 +20,7 @@ jobs:
         run: git clone -b ${{ steps.branch-name.outputs.current_branch }} --jobs 20 --recurse-submodules ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} .
 
       - name: Update modules
-        run: git submodule update --jobs 5 --remote --merge dxvk/ protonfixes/
+        run: git submodule update --jobs 5 --remote --merge dxvk/ protonfixes/ vkd3d-proton/
 
       - name: Get Proton Versions
         run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
