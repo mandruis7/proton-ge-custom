@@ -365,7 +365,7 @@ $(DIST_FONTS): fonts
 ALL_TARGETS += dist
 GOAL_TARGETS += dist
 
-dist_prefix: wine gst_good gst_libav gst_plugins_rs
+dist_prefix: wine gst_good gst_libav gst_plugins_rs gamemode
 	find $(DST_LIBDIR32)/wine -type f -execdir chmod a-w '{}' '+'
 	find $(DST_LIBDIR64)/wine -type f -execdir chmod a-w '{}' '+'
 	rm -rf $(abspath $(DIST_PREFIX))
@@ -430,6 +430,14 @@ GAMEMODE_MESON_ARGS = \
 $(eval $(call rules-source,gamemode,$(SRCDIR)/gamemode))
 $(eval $(call rules-meson,gamemode,32))
 $(eval $(call rules-meson,gamemode,64))
+
+$(OBJ)/.gamemode-post-build32:
+	mkdir -p $(DST_DIR)/bin
+	cp -f $(SRCDIR)/gamemode/data/gamemoderun $(DST_DIR)/bin
+
+$(OBJ)/.gamemode-post-build64:
+	mkdir -p $(DST_DIR)/bin
+	cp -f $(SRCDIR)/gamemode/data/gamemoderun $(DST_DIR)/bin
 
 ##
 ## dav1d
