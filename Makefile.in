@@ -420,6 +420,18 @@ endif # ifeq ($(CONTAINER),)
 
 
 ##
+## gamemode
+##
+
+GAMEMODE_MESON_ARGS = \
+	-Dwith-sd-bus-provider=no-daemon \
+	-Dwith-util=false \
+
+$(eval $(call rules-source,gamemode,$(SRCDIR)/gamemode))
+$(eval $(call rules-meson,gamemode,32))
+$(eval $(call rules-meson,gamemode,64))
+
+##
 ## dav1d
 ##
 
