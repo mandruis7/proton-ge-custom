@@ -241,7 +241,7 @@ Full patches can be viewed in [protonprep-valve-staging.sh](patches/protonprep-v
 
 PLEASE NOTE: There are prerequisites for using this version of proton:
 
-1. You must have vulkan gpu drivers/packages installed properly on your system. See https://github.com/lutris/docs/blob/master/InstallingDrivers.md
+1. You must have vulkan gpu drivers/packages installed properly on your system. VKD3D on AMD requires Mesa 22.0.0 or higher for VK_KHR_dynamic_rendering extension. See https://github.com/lutris/docs/blob/master/InstallingDrivers.md for general driver installation guidance.
 
 ### Manual
 
@@ -252,7 +252,7 @@ This section is for those that use the native version of Steam.
 1. Download a release from the [Releases](https://github.com/GloriousEggroll/proton-ge-custom/releases) page.
 2. Create a `~/.steam/root/compatibilitytools.d` directory if it does not exist.
 3. Extract the release tarball into `~/.steam/root/compatibilitytools.d/`.
-   * `tar -xf Proton-VERSION.tar.gz -C ~/.steam/root/compatibilitytools.d/`
+   * `tar -xf GE-ProtonVERSION.tar.gz -C ~/.steam/root/compatibilitytools.d/`
 4. Restart Steam.
 5. [Enable proton-ge-custom](#enabling).
 
@@ -276,7 +276,7 @@ This unofficial build isn't supported by GloriousEggroll nor Valve and wasn't te
 1. Download a release from the [Releases](https://github.com/GloriousEggroll/proton-ge-custom/releases) page.
 2. Create a `~/.var/app/com.valvesoftware.Steam/data/Steam/compatibilitytools.d/` directory if it does not exist.
 3. Extract the release tarball into `~/.var/app/com.valvesoftware.Steam/data/Steam/compatibilitytools.d/`.
-   * `tar -xf Proton-VERSION.tar.gz -C ~/.var/app/com.valvesoftware.Steam/data/Steam/compatibilitytools.d/`
+   * `tar -xf GE-ProtonVERSION.tar.gz -C ~/.var/app/com.valvesoftware.Steam/data/Steam/compatibilitytools.d/`
 4. Restart Steam.
 5. [Enable proton-ge-custom](#enabling).
 
