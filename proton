@@ -31,7 +31,7 @@ from random import randrange
 #To enable debug logging, copy "user_settings.sample.py" to "user_settings.py"
 #and edit it if needed.
 
-CURRENT_PREFIX_VERSION="GE-Proton7-15"
+CURRENT_PREFIX_VERSION="GE-Proton7-16"
 
 PFX="Proton: "
 ld_path_var = "LD_LIBRARY_PATH"
@@ -1127,6 +1127,7 @@ def default_compat_config():
                 "1075200", #TOHU
                 "1102190", #Monster Train
                 "1107790", #The Complex
+                "1135230", #Ember Knights
                 "1331440", #FUSER
                 "1523720", #Cook-Out
                 "1110100", # Power Rangers: Battle for the Grid
