@@ -32,7 +32,7 @@ jobs:
         run: echo ${{ env.RELEASE_VERSION }}
 
       - name: Install dependencies apt
-        run: sudo apt update && sudo apt-get install -y ccache
+        run: sudo apt update && sudo apt-get install -y ccache fontforge-nox
 
       - name: apply patches
         run: ./patches/protonprep-valve-staging.sh  || true
