@@ -31,32 +31,8 @@ jobs:
       - name: Display version
         run: echo ${{ env.RELEASE_VERSION }}
 
-      - name: Test sha512sum availability
-        run: echo "hello" | sha512sum
-
-      - name: Add architecture i386
-        run: sudo dpkg --add-architecture i386
-
-      - name: Add update repos
-        run: sudo apt update
-
       - name: Install dependencies apt
-        run: sudo apt-get install -y ccache texinfo gpgv2 gnupg2 git fontforge-nox python-debian python3-pip apt-transport-https ca-certificates curl gnupg2 software-properties-common
-
-      - name: Install dependencies pip
-        run: pip install afdko singledispatch==3.4.0.4
-
-      - name: Allow user to run stuff in steamrt
-        run: sudo sysctl kernel.unprivileged_userns_clone=1
-
-      - name: Allow user to run stuff in steamrt
-        run: sudo mkdir -p /etc/sysctl.d/
-
-      - name: Allow user to run stuff in steamrt
-        run: echo 'kernel.unprivileged_userns_clone=1' | sudo tee /etc/sysctl.d/docker_user.conf
-
-      - name: Ensure we use only the mingw-w64 that we built
-        run: sudo apt-get remove -y '*mingw-w64*'
+        run: sudo apt update && sudo apt-get install -y ccache
 
       - name: apply patches
         run: ./patches/protonprep-valve-staging.sh  || true
@@ -71,28 +47,28 @@ jobs:
           key: ccache-proton-${{ github.run_id }}
           restore-keys: |
             ccache-proton
+
       - name: Configure build proton
         working-directory: ./build/
         run: ../configure.sh --build-name="${{ env.RELEASE_VERSION }}" --enable-ccache
 
-      # Build name following convention: Proton-<tag>
       - name: Build proton
         working-directory: ./build/
         run: make dist
 
       - name: Rename directory
         working-directory: ./build/
-        run: mv dist ${{ env.RELEASE_VERSION }}
+        run: mv dist "${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}"
 
       - name: Archive build
         working-directory: ./build/
-        run: tar -czvf ${{ env.RELEASE_VERSION }}.tar.gz ${{ env.RELEASE_VERSION }}
+        run: tar -czvf "${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}.tar.gz" "${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}"
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.PROTON_GE_GITHUB_ACTIONS_BUILD }}
-          file: build/${{ env.RELEASE_VERSION }}.tar.gz
+          file: build/${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}.tar.gz
           file_glob: true
           tag: "${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}"
           overwrite: false
