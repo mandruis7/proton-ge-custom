@@ -86,6 +86,7 @@
     -W packager-DllMain \
     -W winemenubuilder-Desktop_Icon_Path \
     -W wscript-support-d-u-switches \
+    -W sapi-ISpObjectToken-CreateInstance \
     -W sapi-iteration-tokens
 
     # NOTE: Some patches are applied manually because they -do- apply, just not cleanly, ie with patch fuzz.
@@ -147,7 +148,8 @@
     # ** packager-DllMain - applied manually
     # ** winemenubuilder-Desktop_Icon_Path - applied manually
     # ** wscript-support-d-u-switches - applied manually
-    # ** sapi-iteration-tokens - applied manually because upstream contains fix for bless unleashed launcher
+    # sapi-ISpObjectToken-CreateInstance - already applied
+    # sapi-iteration-tokens - already applied
 
     echo "WINE: -STAGING- applying staging Compiler_Warnings revert for steamclient compatibility"
     # revert this, it breaks lsteamclient compilation
@@ -254,16 +256,6 @@
     # wscript-support-d-u-switches
     patch -Np1 < ../patches/wine-hotfixes/staging/wscript-support-d-u-switches/0001-wscript-return-TRUE-for-d-and-u-stub-switches.patch
 
-    # sapi-iteration-tokens
-    patch -Np1 < ../patches/wine-hotfixes/staging/sapi-iteration-tokens/0001-sapi-Implement-ISpRegDataKey-CreateKey.patch
-    patch -Np1 < ../patches/wine-hotfixes/staging/sapi-iteration-tokens/0003-sapi-Implement-ISpRegDataKey-GetStringValue.patch
-    patch -Np1 < ../patches/wine-hotfixes/staging/sapi-iteration-tokens/0004-sapi-EnumTokens-setup-enumeration-members.patch
-    patch -Np1 < ../patches/wine-hotfixes/staging/sapi-iteration-tokens/0005-sapi-Implement-ISpObjectTokenEnumBuilder-Item.patch
-    patch -Np1 < ../patches/wine-hotfixes/staging/sapi-iteration-tokens/0006-sapi-Implement-ISpObjectToken-GetId.patch
-    patch -Np1 < ../patches/wine-hotfixes/staging/sapi-iteration-tokens/0007-sapi-Implement-ISpObjectToken-OpenKey.patch
-    patch -Np1 < ../patches/wine-hotfixes/staging/sapi-iteration-tokens/0008-sapi-Add-default-voice-registry-key.patch
-    patch -Np1 < ../patches/wine-hotfixes/staging/sapi-iteration-tokens/0009-sapi-Return-dump-object-in-ISpObjectTokenEnumBuilder.patch
-
     # nvapi/nvcuda
     # this was added in 7.1, so it's not in the 7.0 tree
     patch -Np1 < ../patches/wine-hotfixes/staging/nvcuda/0016-nvcuda-Make-nvcuda-attempt-to-load-libcuda.so.1.patch
@@ -300,9 +292,6 @@
 
     echo "WINE: -PROTON- fake current res patches"
     patch -Np1 < ../patches/proton/65-proton-fake_current_res_patches.patch
-
-    echo "WINE: -PROTON- add fsync patch to fix Elden Ring crashes"
-    patch -Np1 < ../patches/proton/0001-fsync-Reuse-shared-mem-indices.patch
 
 ### END PROTON PATCH SECTION ###
 
