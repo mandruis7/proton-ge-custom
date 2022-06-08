@@ -1199,6 +1199,7 @@ class Session:
         self.dlloverrides = {
                 "steam.exe": "b", #always use our special built-in steam.exe
                 "dotnetfx35.exe": "b", #replace the broken installer, as does Windows
+                "dotnetfx35setup.exe": "b",
                 "beclient.dll": "b,n",
                 "beclient_x64.dll": "b,n",
         }
@@ -1655,9 +1656,9 @@ if __name__ == "__main__":
     if g_proton.missing_default_prefix():
         g_proton.make_default_prefix()
 
-    import protonfixes
-
     g_session.init_session(sys.argv[1] != "runinprefix")
+
+    import protonfixes
 
     #determine mode
     rc = 0
