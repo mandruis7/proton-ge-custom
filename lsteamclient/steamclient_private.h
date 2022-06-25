@@ -59,6 +59,7 @@ void *create_LinuxISteamMatchmakingServerListResponse(void *win, const char *ver
 void *create_LinuxISteamMatchmakingPingResponse(void *win, const char *version);
 void *create_LinuxISteamMatchmakingPlayersResponse(void *win, const char *version);
 void *create_LinuxISteamMatchmakingRulesResponse(void *win, const char *version);
+void *manual_convert_SteamAPIWarningMessageHook_t(void *win_func);
 void *manual_convert_FSteamNetworkingSocketsDebugOutput(void *win_func);
 void *manual_convert_SteamAPI_CheckCallbackRegistered_t(void *win_func);
 
@@ -68,10 +69,12 @@ typedef uint64 SteamAPICall_t; //for ancient SDKs
 bool do_cb_wrap(HSteamPipe pipe, void *linux_side, bool (*cpp_func)(void *, SteamAPICall_t, void *, int, int, bool *), SteamAPICall_t call, void *callback, int callback_len, int cb_expected, bool *failed);
 
 void *alloc_mem_for_iface(size_t size, const char *iface_version);
+void *alloc_vtable(void *vtable, unsigned int method_count, const char *iface_version);
 
 enum callback_type
 {
     SOCKET_DEBUG_OUTPUT = 1,
+    STEAM_API_WARNING_HOOK,
 };
 
 struct callback_data
@@ -87,6 +90,12 @@ struct callback_data
             const char *msg;
         }
         sockets_debug_output;
+        struct
+        {
+            int severity;
+            const char *msg;
+        }
+        steam_api_warning_hook;
     };
 };
 
