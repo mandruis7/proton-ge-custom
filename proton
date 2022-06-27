@@ -40,7 +40,7 @@ from random import randrange
 #To enable debug logging, copy "user_settings.sample.py" to "user_settings.py"
 #and edit it if needed.
 
-CURRENT_PREFIX_VERSION="GE-Proton7-21"
+CURRENT_PREFIX_VERSION="GE-Proton7-22"
 
 PFX="Proton: "
 ld_path_var = "LD_LIBRARY_PATH"
@@ -1456,9 +1456,9 @@ class Session:
 
         #if fsr patch is applied, apex legends fails to set 1080p fullscreen unless fsr is enabled
         if "SteamAppId" in os.environ:
-	        appid = os.environ["SteamAppId"]
-	        if appid == "1172470":
-		        self.env["WINE_FULLSCREEN_FSR"] = "1"
+            appid = os.environ["SteamAppId"]
+            if os.environ["SteamAppId"] == "1172470":
+                self.env["WINE_FULLSCREEN_FSR"] = "1"
 
         s = ""
         for dll in self.dlloverrides:
