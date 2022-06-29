@@ -11,8 +11,8 @@
     patch -Np1 < ../patches/dxvk/proton-dxvk_add_new_dxvk_config_library.patch
 
     # https://github.com/doitsujin/dxvk/pull/2608
-    echo "DXVK: Add support for shared ID3D11Fence object"
-    patch -Np1 < ../patches/dxvk/2608.patch
+#    echo "DXVK: Add support for shared ID3D11Fence object"
+#    patch -Np1 < ../patches/dxvk/2608.patch
 
     # https://github.com/doitsujin/dxvk/pull/2675
     echo "DXVK: [dxgi] Leave fullscreen mode when window looses focus"
@@ -33,8 +33,8 @@
 #    patch -Np1 < ../patches/vkd3d-proton/halo_infinite_wip.patch
 
     # https://github.com/HansKristian-Work/vkd3d-proton/pull/1070
-    echo "VKD3D: Add support for shared ID3D12Resource and ID3D12Fence objects"
-    patch -Np1 < ../patches/vkd3d-proton/1070.patch
+#    echo "VKD3D: Add support for shared ID3D12Resource and ID3D12Fence objects"
+#    patch -Np1 < ../patches/vkd3d-proton/1070.patch
 
     cd ..
 
@@ -321,9 +321,6 @@
     echo "WINE: -GAME FIXES- add powerprof patches for FFVII Remake and SpecialK"
     patch -Np1 < ../patches/game-patches/FFVII-and-SpecialK-powerprof.patch
 
-    echo "WINE: -GAME FIXES- add PSO2 case sensitive file stutter fix patch"
-    patch -Np1 < ../patches/game-patches/pso2_stutter_fix.patch
-
 ### END GAME PATCH SECTION ###
 
 ### (2-4) PROTON PATCH SECTION ###
@@ -333,6 +330,9 @@
 
     echo "WINE: -PROTON- fake current res patches"
     patch -Np1 < ../patches/proton/65-proton-fake_current_res_patches.patch
+
+    echo "WINE: -PROTON- add 32:9 FSR resolutions"
+    patch -Np1 < ../patches/proton/69-proton-fsr-add-329-res.patch
 
 ### END PROTON PATCH SECTION ###
 
@@ -356,17 +356,6 @@
     patch -Np1 < ../patches/wine-hotfixes/pending/0002-include-Add-THREAD_POWER_THROTTLING_STATE-type.patch
     patch -Np1 < ../patches/wine-hotfixes/pending/0003-ntdll-Fake-success-for-ThreadPowerThrottlingState.patch
     
-    # fixes blops II zombies and multiplayer freeze in proton-only due to DRM check
-    echo "WINE: -HOTFIX- fix blops II zombies and multiplayer crash"
-    patch -Np1 < ../patches/wine-hotfixes/pending/blopsII_proton_hang_fix.patch
-
-    # pending upstream
-    patch -Np1 < ../patches/wine-hotfixes/pending/5a4a35389becdd9b0c17516888273f0ef41a5040.patch
-    patch -Np1 < ../patches/wine-hotfixes/pending/467625c6a3c879207f80bb579634e84f8754eb0f.patch
-
-    # currently broken
-    #echo "WINE: -HOTFIX- fix the good life videos"
-    #patch -Np1 < ../patches/wine-hotfixes/pending/mfplat_http_schemas.patch
 
 ### END WINE HOTFIX SECTION ###
 
