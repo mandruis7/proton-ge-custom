@@ -20,7 +20,10 @@ jobs:
         run: git clone -b ${{ steps.branch-name.outputs.current_branch }} --jobs 20 --recurse-submodules ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} .
 
       - name: Update modules
-        run: git submodule update --jobs 5 --remote --merge dxvk/ protonfixes/ vkd3d-proton/ dxvk-nvapi/
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git submodule update --jobs 10 --remote --recursive --merge dxvk/ protonfixes/ vkd3d-proton/ dxvk-nvapi/
       
       - name: Update wine
         run:  cd wine && git checkout $(git tag --sort=committerdate | tail -1)
