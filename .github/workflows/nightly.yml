@@ -37,9 +37,13 @@ jobs:
       - name: Install dependencies apt
         run: sudo apt update && sudo apt-get install -y ccache fontforge-nox
 
-      - name: Delete dxvk-async
+      - name: Get latest dxvk-async patch
         working-directory: ./patches/dxvk/
-        run: rm dxvk-async.patch
+        run: wget -O dxvk-async.patch https://raw.githubusercontent.com/Sporif/dxvk-async/master/dxvk-async.patch
+
+      - name: Delete old patches
+        working-directory: ./patches/dxvk/
+        run: rm 2608.patch 2675.patch || true
 
       - name: apply patches
         run: ./patches/protonprep-valve-staging.sh  || true
