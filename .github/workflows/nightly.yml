@@ -39,7 +39,7 @@ jobs:
 
       - name: Get latest dxvk-async
         working-directory: ./patches/dxvk/
-        run: wget https://raw.githubusercontent.com/Sporif/dxvk-async/master/dxvk-async.patch
+        run: wget -O dxvk-async.patch https://raw.githubusercontent.com/Sporif/dxvk-async/master/dxvk-async.patch
 
       - name: apply patches
         run: ./patches/protonprep-valve-staging.sh  || true
