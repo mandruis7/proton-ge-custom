@@ -43,11 +43,11 @@ jobs:
 
       - name: Delete old patches dxvk
         working-directory: ./patches/dxvk/
-        run: rm 2608.patch 2675.patch || true
+        run: rm 2608.patch 2675.patch 2> /dev/null
 
       - name: Delete old patches vkd3d-proton
         working-directory: ./patches/vkd3d-proton/
-        run: rm 1155.patch || true
+        run: rm 1155.patch 2> /dev/null
 
       - name: apply patches
         run: ./patches/protonprep-valve-staging.sh  || true
