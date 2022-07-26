@@ -14,9 +14,6 @@
     echo "DXVK: [dxgi] Leave fullscreen mode when window looses focus"
     patch -Np1 < ../patches/dxvk/2675.patch
 
-    echo "VKD3D: Add shared fence patches"
-    patch -Np1 < ../patches/dxvk/2608.patch
-
     echo "DXVK:add dxvk async patch"
     patch -Np1 < ../patches/dxvk/dxvk-async.patch
     cd ..
@@ -24,11 +21,6 @@
     cd vkd3d-proton
     git reset --hard HEAD
     git clean -xdf
-
-    echo "VKD3D: Add Halo Infinite patches"
-    #patch -Np1 < ../patches/vkd3d-proton/1070.patch
-    patch -Np1 < ../patches/vkd3d-proton/1155.patch
-
     cd ..
 
 ### END PREP SECTION ###
@@ -355,6 +347,10 @@
     
     echo "WINE: -PROTON- apply revert to allow gallium nine functionality"
     patch -Np1 < ../patches/wine-hotfixes/pending/0001-revert-96b82203f192eade6910f4ac2ecb188e27d22feb-to-k.patch
+
+    echo "WINE: -PROTON- pending Halo Infinite patches"
+    patch -Np1 < ../patches/wine-hotfixes/pending/halo-infinite-fixes-1.patch
+
 ### END WINE HOTFIX SECTION ###
 
 ### (2-6) WINE PENDING UPSTREAM SECTION ###
