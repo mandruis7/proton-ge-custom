@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '30 21 * * 1-5'
+    - cron:  '00 19 * * 1-5'
 
 jobs:
   build-proton-ge:
@@ -23,7 +23,7 @@ jobs:
         run: |
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
-          git submodule update --jobs 10 --remote --recursive protonfixes/ vkd3d-proton/ dxvk-nvapi/
+          git submodule update --jobs 10 --remote --recursive dxvk/ protonfixes/ vkd3d-proton/ dxvk-nvapi/
       
       - name: Update wine
         run:  cd wine && git checkout $(git tag --sort=committerdate | tail -1)
@@ -36,6 +36,18 @@ jobs:
 
       - name: Install dependencies apt
         run: sudo apt update && sudo apt-get install -y ccache fontforge-nox
+
+      - name: Get latest dxvk-async patch
+        working-directory: ./patches/dxvk/
+        run: wget -O dxvk-async.patch https://raw.githubusercontent.com/Sporif/dxvk-async/master/dxvk-async.patch
+
+      - name: Delete old patches dxvk
+        working-directory: ./patches/dxvk/
+        run: rm 2608.patch 2675.patch || true
+
+      - name: Delete old patches vkd3d-proton
+        working-directory: ./patches/vkd3d-proton/
+        run: rm 1155.patch || true
 
       - name: apply patches
         run: ./patches/protonprep-valve-staging.sh  || true
