@@ -1,0 +1,89 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '00 19 * * 1-5'
+
+jobs:
+  build-proton-ge:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Get branch names
+        id: branch-name
+        uses: tj-actions/branch-names@v5.1
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%d%m%Y')"
+
+      - name: Clone repo
+        run: git clone -b ${{ steps.branch-name.outputs.current_branch }} --jobs 20 --recurse-submodules ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY} .
+
+      - name: Update modules
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
+          git submodule update --jobs 10 --remote --recursive dxvk/ protonfixes/ vkd3d-proton/ dxvk-nvapi/
+      
+      - name: Update wine
+        run:  cd wine && git checkout $(git tag --sort=committerdate | tail -1)
+
+      - name: Get Proton Versions
+        run: echo "RELEASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Display version
+        run: echo ${{ env.RELEASE_VERSION }}
+
+      - name: Install dependencies apt
+        run: sudo apt update && sudo apt-get install -y ccache fontforge-nox
+
+      - name: Get latest dxvk-async patch
+        working-directory: ./patches/dxvk/
+        run: wget -O dxvk-async.patch https://raw.githubusercontent.com/Sporif/dxvk-async/master/dxvk-async.patch
+
+      - name: Delete old patches dxvk
+        working-directory: ./patches/dxvk/
+        run: rm -f 2608.patch 2675.patch
+
+#       - name: Delete old patches vkd3d-proton
+#         working-directory: ./patches/vkd3d-proton/
+#         run: rm -f 1155.patch
+
+      - name: apply patches
+        run: ./patches/protonprep-valve-staging.sh  || true
+
+      - name: Create dir structure
+        run: mkdir build
+
+      - name: Cache ccache
+        uses: actions/cache@v2
+        with:
+          path: ~/.ccache
+          key: ccache-proton-${{ github.run_id }}
+          restore-keys: |
+            ccache-proton
+
+      - name: Configure build proton
+        working-directory: ./build/
+        run: ../configure.sh --build-name="${{ env.RELEASE_VERSION }}" --enable-ccache
+
+      - name: Build proton
+        working-directory: ./build/
+        run: make dist
+
+      - name: Rename directory
+        working-directory: ./build/
+        run: mv dist "${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}"
+
+      - name: Archive build
+        working-directory: ./build/
+        run: tar -czvf "${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}.tar.gz" "${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}"
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.PROTON_GE_GITHUB_ACTIONS_BUILD }}
+          file: build/${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}.tar.gz
+          file_glob: true
+          tag: "${{ env.RELEASE_VERSION }}-Nightly-${{ steps.date.outputs.date }}"
+          overwrite: false
