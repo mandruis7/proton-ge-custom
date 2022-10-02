@@ -101,8 +101,7 @@
     -W wscript-support-d-u-switches \
     -W wininet-Cleanup \
     -W sapi-ISpObjectToken-CreateInstance \
-    -W sapi-iteration-tokens \
-    -W cryptext-CryptExtOpenCER
+    -W sapi-iteration-tokens
 
     # NOTE: Some patches are applied manually because they -do- apply, just not cleanly, ie with patch fuzz.
     # A detailed list of why the above patches are disabled is listed below:
