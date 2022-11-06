@@ -364,7 +364,6 @@
 
     # https://bugs.winehq.org/show_bug.cgi?id=52956
     echo "WINE: -HOTFIX- fix star citizen bug 52956"
-    patch -Np1 < ../patches/wine-hotfixes/upstream/15aa8c6-fix-star-citizen-bug-52956.patch
     patch -Np1 < ../patches/wine-hotfixes/pending/0001-winex11.drv-Define-ControlMask-when-not-available.patch
     patch -Np1 < ../patches/wine-hotfixes/pending/0002-include-Add-THREAD_POWER_THROTTLING_STATE-type.patch
     patch -Np1 < ../patches/wine-hotfixes/pending/0003-ntdll-Fake-success-for-ThreadPowerThrottlingState.patch
@@ -391,6 +390,10 @@
     echo "WINE: -HOTFIX- fix Overwatch 2 shader compilation issue"
     # https://gitlab.winehq.org/wine/wine/-/merge_requests/1152
     patch -Np1 < ../patches/wine-hotfixes/pending/1152.patch
+
+    echo "WINE: -HOTFIX- fix Overwatch 2 from freezing on wine 7.12 and older"
+    # https://gitlab.winehq.org/wine/wine/-/merge_requests/1152
+    patch -Np1 < ../patches/wine-hotfixes/pending/4bf9d2403f269e7f3595ad075a4afee9adbda51f.patch
     
 ### END WINE HOTFIX SECTION ###
 
