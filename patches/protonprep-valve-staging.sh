@@ -17,10 +17,6 @@
     cd vkd3d-proton
     git reset --hard HEAD
     git clean -xdf
-
-    # https://github.com/HansKristian-Work/vkd3d-proton/pull/1465
-    echo "VKD3D: Fix Halo Infinite loading crash"
-    patch -Np1 < ../patches/vkd3d/1465.patch
     
     cd ..
 
@@ -404,6 +400,9 @@
     echo "WINE: -HOTFIX- fix Anno 1800 multiplayer"
     # https://gitlab.winehq.org/wine/wine/-/merge_requests/1152
     patch -Np1 < ../patches/wine-hotfixes/pending/181.patch
+
+    echo "WINE: -HOTFIX- Add Star Citizen EAC patch and wrap it around SteamGameId=starcitizen envvar"
+    patch -Np1 < ../patches/game-patches/star-citizen-eac.patch
     
 ### END WINE HOTFIX SECTION ###
 
