@@ -17,6 +17,9 @@
     cd vkd3d-proton
     git reset --hard HEAD
     git clean -xdf
+
+    # https://github.com/ValveSoftware/Proton/issues/6696#issuecomment-1515449878
+    patch -Np1 < ../patches/vkd3d-proton/0001-Add-ID3D12DeviceRemovedExtendedDataSettings-in-D3D12.patch
     
     cd ..
 
@@ -322,6 +325,9 @@
 
     echo "WINE: -GAME FIXES- assetto corsa hud fix"
     patch -Np1 < ../patches/game-patches/assettocorsa-hud.patch
+
+    echo "WINE: -GAME FIXES- Minecraft Legends"
+    patch -Np1 < ../patches/game-patches/0001-Crude-patch-to-forward-stub-Un-RegisterAppStateChang.patch
 
     echo "WINE: -GAME FIXES- killer instinct vulkan fix"
     patch -Np1 < ../patches/game-patches/killer-instinct-winevulkan_fix.patch

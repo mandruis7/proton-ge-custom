@@ -1,0 +1,151 @@
+From 98decc6331429ffe4f602e81c82ba0ba4c5f52c1 Mon Sep 17 00:00:00 2001
+From: James Puleo <james@jame.xyz>
+Date: Wed, 19 Apr 2023 12:21:29 -0400
+Subject: [PATCH] Crude patch to forward & stub
+ `(Un)RegisterAppStateChangeNotification`
+
+Co-authored-by: Mohamad Al-Jaf <mohamadaljaf@gmail.com>
+---
+ configure                                     |  2 ++
+ .../api-ms-win-core-psm-appnotify-l1-1-0.spec |  4 +--
+ dlls/twinapi.appcore.dll/main.c               | 13 ++++++++
+ dlls/twinapi.appcore.dll/twinapi.appcore.spec |  2 ++
+ include/Makefile.in                           |  1 +
+ include/appnotify.h                           | 30 +++++++++++++++++++
+ tools/make_specfiles                          |  4 +++
+ 7 files changed, 54 insertions(+), 2 deletions(-)
+ create mode 100644 include/appnotify.h
+
+diff --git a/configure b/configure
+index 2fdee7e73ae..2a61d85e520 100755
+--- a/configure
++++ b/configure
+@@ -1666,6 +1666,7 @@ enable_tdh
+ enable_tdi_sys
+ enable_traffic
+ enable_twain_32
++enable_twinapi_appcore
+ enable_tzres
+ enable_ucrtbase
+ enable_uianimation
+@@ -22405,6 +22406,7 @@ wine_fn_config_makefile dlls/toolhelp.dll16 enable_win16
+ wine_fn_config_makefile dlls/traffic enable_traffic
+ wine_fn_config_makefile dlls/twain.dll16 enable_win16
+ wine_fn_config_makefile dlls/twain_32 enable_twain_32
++wine_fn_config_makefile dlls/twinapi_core_dll enable_twinapi_core_dll
+ wine_fn_config_makefile dlls/twain_32/tests enable_tests
+ wine_fn_config_makefile dlls/typelib.dll16 enable_win16
+ wine_fn_config_makefile dlls/tzres enable_tzres
+diff --git a/dlls/api-ms-win-core-psm-appnotify-l1-1-0/api-ms-win-core-psm-appnotify-l1-1-0.spec b/dlls/api-ms-win-core-psm-appnotify-l1-1-0/api-ms-win-core-psm-appnotify-l1-1-0.spec
+index 8b069d66e62..3fcb72f1bf4 100644
+--- a/dlls/api-ms-win-core-psm-appnotify-l1-1-0/api-ms-win-core-psm-appnotify-l1-1-0.spec
++++ b/dlls/api-ms-win-core-psm-appnotify-l1-1-0/api-ms-win-core-psm-appnotify-l1-1-0.spec
+@@ -1,2 +1,2 @@
+-@ stub RegisterAppStateChangeNotification
+-@ stub UnregisterAppStateChangeNotification
++@ stdcall RegisterAppStateChangeNotification(ptr ptr ptr) twinapi.appcore.dll.RegisterAppStateChangeNotification
++@ stdcall UnregisterAppStateChangeNotification(ptr) twinapi.appcore.dll.UnregisterAppStateChangeNotification
+diff --git a/dlls/twinapi.appcore.dll/main.c b/dlls/twinapi.appcore.dll/main.c
+index 3842e36153c..d7530c6766d 100644
+--- a/dlls/twinapi.appcore.dll/main.c
++++ b/dlls/twinapi.appcore.dll/main.c
+@@ -25,6 +25,7 @@
+ #include "winstring.h"
+ #include "wine/debug.h"
+ #include "objbase.h"
++#include "appnotify.h"
+ 
+ #include "activation.h"
+ 
+@@ -293,3 +294,15 @@ HRESULT WINAPI DllGetActivationFactory(HSTRING classid, IActivationFactory **fac
+     IUnknown_AddRef(*factory);
+     return S_OK;
+ }
++
++APICONTRACT ULONG WINAPI RegisterAppStateChangeNotification( PAPPSTATE_CHANGE_ROUTINE routine, void *context, PAPPSTATE_REGISTRATION *registration )
++{
++    FIXME( "(%p, %p, %p) - stub - falsely returning success.\n", routine, context, registration );
++    *registration = NULL;
++    return ERROR_SUCCESS;
++}
++
++APICONTRACT void WINAPI UnregisterAppStateChangeNotification( PAPPSTATE_REGISTRATION registration )
++{
++    FIXME( "(%p) - stub.\n", registration );
++}
+diff --git a/dlls/twinapi.appcore.dll/twinapi.appcore.spec b/dlls/twinapi.appcore.dll/twinapi.appcore.spec
+index 721493229c2..a494d498656 100644
+--- a/dlls/twinapi.appcore.dll/twinapi.appcore.spec
++++ b/dlls/twinapi.appcore.dll/twinapi.appcore.spec
+@@ -1,3 +1,5 @@
+ 1 stdcall -private DllCanUnloadNow()
+ 2 stdcall -private DllGetActivationFactory(ptr ptr)
+ 3 stdcall -private DllGetClassObject(ptr ptr ptr)
++@ stdcall RegisterAppStateChangeNotification(ptr ptr ptr)
++@ stdcall UnregisterAppStateChangeNotification(ptr)
+diff --git a/include/Makefile.in b/include/Makefile.in
+index 7afc7f9eb2c..be4fca8e3dc 100644
+--- a/include/Makefile.in
++++ b/include/Makefile.in
+@@ -19,6 +19,7 @@ SOURCES = \
+ 	appcompatapi.h \
+ 	appmgmt.h \
+ 	appmodel.h \
++	appnotify.h \
+ 	asferr.h \
+ 	asptlb.idl \
+ 	asyncinfo.idl \
+diff --git a/include/appnotify.h b/include/appnotify.h
+new file mode 100644
+index 00000000000..7fc48153011
+--- /dev/null
++++ b/include/appnotify.h
+@@ -0,0 +1,30 @@
++#ifndef _WINE_APISET_PSMAPPNOTIFY_H_
++#define _WINE_APISET_PSMAPPNOTIFY_H_
++
++#include <windows.h>
++
++#define PSM_APP_API_HOST
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#undef APICONTRACT
++#ifndef PSM_APP_API_HOST
++#define APICONTRACT         DECLSPEC_IMPORT
++#else
++#define APICONTRACT
++#endif
++
++typedef void (*PAPPSTATE_CHANGE_ROUTINE) (BOOLEAN quiesced, void *context);
++
++typedef struct _APPSTATE_REGISTRATION *PAPPSTATE_REGISTRATION;
++
++APICONTRACT ULONG NTAPI RegisterAppStateChangeNotification(PAPPSTATE_CHANGE_ROUTINE,void *,PAPPSTATE_REGISTRATION *);
++APICONTRACT void  NTAPI UnregisterAppStateChangeNotification(PAPPSTATE_REGISTRATION);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif // _WINE_APISET_PSMAPPNOTIFY_H_
+diff --git a/tools/make_specfiles b/tools/make_specfiles
+index b5e6443dd3c..2eae225fee6 100755
+--- a/tools/make_specfiles
++++ b/tools/make_specfiles
+@@ -26,6 +26,10 @@ my $group_head;
+ 
+ my @dll_groups =
+ (
++ [
++  "twinapi.appcore.spec",
++  "api-ms-win-core-psm-appnotify-l1-1-0"
++ ],
+  [
+   "msvcrt",
+   "msvcirt",
+-- 
+2.39.1
+
